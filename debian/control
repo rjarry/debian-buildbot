@@ -6,14 +6,10 @@ Uploaders: Matthias Klose <doko@debian.org>
 Build-Depends: debhelper (>= 7.0.50~),
  python-all (>= 2.6.6-3),
  python-jinja2 (>= 2.1),
- python-sqlalchemy (>= 0.6.0),
- python-migrate (>= 0.6.1),
+ python-migrate (>= 0.8.0),
  python-mock,
  python-sphinx (>= 1.0.7+dfsg),
- python-twisted-core (>= 2.0),
- python-twisted-web,
- python-twisted-mail,
- python-twisted-words,
+ python-twisted (>= 11.0),
  python-dateutil (>= 1.5),
  libaprutil1,
  bash-completion
@@ -25,14 +21,12 @@ Vcs-Git: git://github.com/buildbot/debian-buildbot.git
 Testsuite: autopkgtest
 
 Package: buildbot
-Architecture: all
+Architecture: any
 Depends: ${python:Depends}, ${misc:Depends}, ${sphinxdoc:Depends},
+ ${shlibs:Depends},
  python-jinja2 (>=2.1),
- python-sqlalchemy (>= 0.6.0),
  python-migrate (>= 0.6.1),
- python-twisted-core (>= 2.0),
- python-twisted-web,
- python-twisted-words,
+ python-twisted (>= 2.0),
  python-dateutil (>= 1.5),
  dpkg (>= 1.15.4),
  adduser

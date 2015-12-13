@@ -151,12 +151,11 @@ class MasterConfig(ConfigErrorsMixin, dirs.DirsMixin, unittest.TestCase):
             if callable(v):
                 if typ == 'loader':
                     self.patch(config.MasterConfig, n,
-                               mock.Mock(side_effect=
-                                         lambda filename, config_dict: None))
+                               mock.Mock(side_effect=lambda filename,
+                                         config_dict: None))
                 else:
                     self.patch(config.MasterConfig, n,
-                               mock.Mock(side_effect=
-                                         lambda: None))
+                               mock.Mock(side_effect=lambda: None))
 
     def install_config_file(self, config_file, other_files={}):
         config_file = textwrap.dedent(config_file)
@@ -1068,6 +1067,25 @@ class BuilderConfig(ConfigErrorsMixin, unittest.TestCase):
             lambda: config.BuilderConfig(category=13,
                                          name='a', slavenames=['a'], factory=self.factory))
 
+    def test_tags_must_be_list(self):
+        self.assertRaisesConfigError(
+            "tags must be a list",
+            lambda: config.BuilderConfig(tags='abc',
+                                         name='a', slavenames=['a'], factory=self.factory))
+
+    def test_tags_must_be_list_of_str(self):
+        self.assertRaisesConfigError(
+            "tags list contains something that is not a string",
+            lambda: config.BuilderConfig(tags=['abc', 13],
+                                         name='a', slavenames=['a'], factory=self.factory))
+
+    def test_tags_no_categories_too(self):
+        self.assertRaisesConfigError(
+            "category is being replaced by tags; you should only specify tags",
+            lambda: config.BuilderConfig(tags=['abc'],
+                                         category='def',
+                                         name='a', slavenames=['a'], factory=self.factory))
+
     def test_inv_nextSlave(self):
         self.assertRaisesConfigError(
             "nextSlave must be a callable",
@@ -1101,7 +1119,7 @@ class BuilderConfig(ConfigErrorsMixin, unittest.TestCase):
                               slavenames=['a'],
                               builddir='a_b_c',
                               slavebuilddir='a_b_c',
-                              category='',
+                              tags=None,
                               nextSlave=None,
                               locks=[],
                               env={},
@@ -1112,7 +1130,7 @@ class BuilderConfig(ConfigErrorsMixin, unittest.TestCase):
     def test_args(self):
         cfg = config.BuilderConfig(
             name='b', slavename='s1', slavenames='s2', builddir='bd',
-            slavebuilddir='sbd', factory=self.factory, category='c',
+            slavebuilddir='sbd', factory=self.factory, tags=['c'],
             nextSlave=lambda: 'ns', nextBuild=lambda: 'nb', locks=['l'],
             env=dict(x=10), properties=dict(y=20), mergeRequests='mr',
             description='buzz')
@@ -1122,7 +1140,7 @@ class BuilderConfig(ConfigErrorsMixin, unittest.TestCase):
                               slavenames=['s2', 's1'],
                               builddir='bd',
                               slavebuilddir='sbd',
-                              category='c',
+                              tags=['c'],
                               locks=['l'],
                               env={'x': 10},
                               properties={'y': 20},
@@ -1134,12 +1152,12 @@ class BuilderConfig(ConfigErrorsMixin, unittest.TestCase):
         nb = lambda: 'nb'
         cfg = config.BuilderConfig(
             name='b', slavename='s1', slavenames='s2', builddir='bd',
-            slavebuilddir='sbd', factory=self.factory, category='c',
+            slavebuilddir='sbd', factory=self.factory, tags=['c'],
             nextSlave=ns, nextBuild=nb, locks=['l'],
             env=dict(x=10), properties=dict(y=20), mergeRequests='mr',
             description='buzz')
         self.assertEqual(cfg.getConfigDict(), {'builddir': 'bd',
-                                               'category': 'c',
+                                               'tags': ['c'],
                                                'description': 'buzz',
                                                'env': {'x': 10},
                                                'factory': self.factory,

@@ -12,9 +12,11 @@ make_docs:
 	$(MAKE) -C docs
 
 override_dh_auto_build: make_docs
+	cd sqlalchemy && python ./setup.py --with-cextensions build
 	dh_auto_build
 
 override_dh_auto_clean:
+	rm -rf sqlalchemy/build
 	rm -fR buildbot.egg-info _trial_temp docs/docs.tgz
 	$(MAKE) -C docs clean
 	dh_auto_clean
@@ -23,7 +25,7 @@ override_dh_auto_test:
 ifneq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
 	@echo "Skipping check (disabled in DEB_BUILD_OPTIONS)."
 else
-	trial --reporter=bwverbose buildbot.test
+	-trial --reporter=bwverbose buildbot.test
 endif
 
 override_dh_python2:

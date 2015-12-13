@@ -393,7 +393,7 @@ class TestRebuild(BuilderMixin, unittest.TestCase):
         control.master = self.master
         self.bldrctrl = builder.BuilderControl(self.bldr, control)
 
-        yield self.bldrctrl.rebuildBuild(self.bstatus, reason='unit test', extraProperties={})
+        yield self.bldrctrl.rebuildBuild(self.bstatus, reason='unit test', extraProperties=None)
 
     @defer.inlineCallbacks
     def test_rebuild_with_no_sourcestamps(self):
@@ -425,15 +425,15 @@ class TestReconfig(BuilderMixin, unittest.TestCase):
 
     @defer.inlineCallbacks
     def test_reconfig(self):
-        yield self.makeBuilder(description="Old", category="OldCat")
+        yield self.makeBuilder(description="Old", tags=["OldTag"])
         self.builder_config.description = "New"
-        self.builder_config.category = "NewCat"
+        self.builder_config.tags = ["NewTag"]
 
         mastercfg = config.MasterConfig()
         mastercfg.builders = [self.builder_config]
         yield self.bldr.reconfigService(mastercfg)
         self.assertEqual(
             dict(description=self.bldr.builder_status.getDescription(),
-                 category=self.bldr.builder_status.getCategory()),
+                 tags=self.bldr.builder_status.getTags()),
             dict(description="New",
-                 category="NewCat"))
+                 tags=["NewTag"]))

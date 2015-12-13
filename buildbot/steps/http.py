@@ -62,30 +62,26 @@ class HTTPStep(BuildStep):
     name = 'HTTPStep'
     description = 'Requesting'
     descriptionDone = 'Requested'
-    requestsParams = ["method", "url", "params", "data", "headers",
+    requestsParams = ["params", "data", "headers",
                       "cookies", "files", "auth",
                       "timeout", "allow_redirects", "proxies",
                       "hooks", "stream", "verify", "cert"]
-    renderables = requestsParams
+    renderables = requestsParams + ["method", "url"]
     session = None
 
-    def __init__(self, url, method, description=None, descriptionDone=None, **kwargs):
+    def __init__(self, url, method, **kwargs):
         if txrequests is None or requests is None:
             config.error("Need to install txrequest to use this step:\n\n pip install txrequests")
-        self.method = method
-        self.url = url
-        self.requestkwargs = {'method': method, 'url': url}
-        for p in HTTPStep.requestsParams:
-            v = kwargs.pop(p, None)
-            self.__dict__[p] = v
-            if v is not None:
-                self.requestkwargs[p] = v
+
         if method not in ('POST', 'GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'):
             config.error("Wrong method given: '%s' is not known" % method)
-        if description is not None:
-            self.description = description
-        if descriptionDone is not None:
-            self.descriptionDone = descriptionDone
+
+        self.method = method
+        self.url = url
+
+        for param in HTTPStep.requestsParams:
+            setattr(self, param, kwargs.pop(param, None))
+
         BuildStep.__init__(self, **kwargs)
 
     def start(self):
@@ -96,6 +92,16 @@ class HTTPStep(BuildStep):
         # create a new session if it doesn't exist
         self.session = getSession()
 
+        requestkwargs = {
+            'method': self.method,
+            'url': self.url
+        }
+
+        for param in self.requestsParams:
+            value = getattr(self, param, None)
+            if value is not None:
+                requestkwargs[param] = value
+
         log = self.addLog('log')
 
         # known methods already tested in __init__
@@ -103,9 +109,9 @@ class HTTPStep(BuildStep):
         log.addHeader('Performing %s request to %s\n' % (self.method, self.url))
         if self.params:
             log.addHeader('Parameters:\n')
-            for k, v in self.requestkwargs.get("params", {}).iteritems():
+            for k, v in requestkwargs.get("params", {}).iteritems():
                 log.addHeader('\t%s: %s\n' % (k, v))
-        data = self.requestkwargs.get("data", None)
+        data = requestkwargs.get("data", None)
         if data:
             log.addHeader('Data:\n')
             if isinstance(data, dict):
@@ -115,7 +121,7 @@ class HTTPStep(BuildStep):
                 log.addHeader('\t%s\n' % data)
 
         try:
-            r = yield self.session.request(**self.requestkwargs)
+            r = yield self.session.request(**requestkwargs)
         except requests.exceptions.ConnectionError, e:
             log.addStderr('An exception occured while performing the request: %s' % e)
             self.finished(FAILURE)
@@ -131,6 +137,7 @@ class HTTPStep(BuildStep):
 
         log.finish()
 
+        self.descriptionDone = "Status code: %d" % r.status_code
         self.step_status.setText(self.describe(done=True))
         if (r.status_code < 400):
             self.finished(SUCCESS)
@@ -156,6 +163,7 @@ class HTTPStep(BuildStep):
             log.addHeader('\t%s: %s\n' % (k, v))
 
         log.addStdout(' ------ Content ------\n%s' % response.text)
+        self.addLog('content').addStdout(response.text)
 
     def describe(self, done=False):
         if done:

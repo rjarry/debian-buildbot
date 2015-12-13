@@ -16,6 +16,9 @@
 from StringIO import StringIO
 from mock import Mock
 
+from buildbot.status.web import baseweb
+from buildbot.test.fake import fakemaster
+
 from twisted.internet import defer
 from twisted.web import server
 
@@ -33,14 +36,24 @@ class FakeRequest(Mock):
     redirected_to = None
     failure = None
 
-    def __init__(self, args={}, content=''):
-        Mock.__init__(self)
+    def __init__(self, args=None, content=''):
+        Mock.__init__(self, spec=server.Request)
+
+        if args is None:
+            args = {}
 
         self.args = args
         self.content = StringIO(content)
-        self.site = Mock()
-        self.site.buildbot_service = Mock()
-        master = self.site.buildbot_service.master = Mock()
+        self.site = Mock(spec=server.Site)
+        webstatus = baseweb.WebStatus(site=self.site)
+        self.site.buildbot_service = webstatus
+        self.uri = '/'
+        self.prepath = []
+        self.method = 'GET'
+        self.received_headers = {}
+        master = webstatus.master = fakemaster.make_master()
+
+        webstatus.setUpJinja2()
 
         self.addedChanges = []
 
@@ -50,6 +63,9 @@ class FakeRequest(Mock):
         master.addChange = addChange
 
         self.deferred = defer.Deferred()
+
+    def getHeader(self, key):
+        return self.received_headers.get(key)
 
     def write(self, data):
         self.written = self.written + data
