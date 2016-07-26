@@ -4,3 +4,4 @@ fix-init-scripts.patch
 orphan-cdn.debian.net.diff
 use-vendor-sqlalchemy.diff
 skip-failing-tests.patch
+fix-build-with-sphinx-1.4.patch

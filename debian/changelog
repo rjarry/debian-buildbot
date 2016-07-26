@@ -1,3 +1,9 @@
+buildbot (0.8.12-3.1) unstable; urgency=medium
+
+  * NMU to fix build with sphinx 1.4 (Closes: #827622).
+
+ -- W. Martin Borgert <debacle@debian.org>  Tue, 26 Jul 2016 19:07:43 +0000
+
 buildbot (0.8.12-3) unstable; urgency=medium
 
   * Build-depend on python-all-dev.

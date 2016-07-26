@@ -1,0 +1,39 @@
+Description: Fix build with sphinx 1.4
+Author: W. Martin Borgert
+Origin: vendor
+Bug-Debian: https://bugs.debian.org/827622
+Last-Update: 2016-07-26
+
+--- buildbot-0.8.12.orig/docs/Makefile
++++ buildbot-0.8.12/docs/Makefile
+@@ -22,7 +22,7 @@ images-eps:
+ # -- Makefile for Sphinx documentation --
+ 
+ # You can set these variables from the command line.
+-SPHINXOPTS    = -q -W
++SPHINXOPTS    = -q
+ SPHINXBUILD   = sphinx-build
+ PAPER         =
+ BUILDDIR      = _build
+--- buildbot-0.8.12.orig/docs/bbdocs/ext.py
++++ buildbot-0.8.12/docs/bbdocs/ext.py
+@@ -15,6 +15,7 @@
+ 
+ from docutils import nodes
+ from sphinx import addnodes
++from sphinx import version_info
+ from sphinx.domains import Domain
+ from sphinx.domains import Index
+ from sphinx.domains import ObjType
+@@ -66,7 +67,10 @@ class BBRefTargetDirective(Directive):
+             else:
+                 indextype = 'single'
+                 indexentry = tpl % (fullname,)
+-            entries.append((indextype, indexentry, targetname, targetname))
++            if version_info >= (1, 4, 0, '', 0):
++                entries.append((indextype, indexentry, targetname, targetname, None))
++            else:
++                entries.append((indextype, indexentry, targetname, targetname))
+ 
+         if entries:
+             inode = addnodes.index(entries=entries)
