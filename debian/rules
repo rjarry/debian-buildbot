@@ -9,7 +9,7 @@ clean:
 	dh $@ --with python2,sphinxdoc,bash-completion --buildsystem python_distutils
 
 make_docs:
-	$(MAKE) -C docs
+	$(MAKE) -C docs SPHINXOPTS='-q'
 
 override_dh_auto_build: make_docs
 	cd sqlalchemy && python ./setup.py --with-cextensions build

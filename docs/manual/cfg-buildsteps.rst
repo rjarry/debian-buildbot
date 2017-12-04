@@ -365,6 +365,10 @@ The Git step takes the following arguments:
    (optional): use the specified string as a path to a reference repository on the local machine.
    Git will try to grab objects from this path first instead of the main repository, if they exist.
 
+``origin``
+   (optional): By default, any clone will use the name "origin" as the remote repository (eg, "origin/master").
+   This renderable option allows that to be configured to an alternate name.
+
 ``progress``
    (optional): passes the (``--progress``) flag to (:command:`git fetch`).
    This solves issues of long fetches being killed due to lack of output, but requires Git 1.7.2 or later.
@@ -740,13 +744,13 @@ If you specify ``p4viewspec`` and any of ``p4base``, ``p4branch``, and/or ``p4ex
     This string lets you change that.
 
 ``p4port``
-    (optional): the :samp:`{host}:{port}` string describing how to get to the P4 Depot (repository), used as the :option:`-p` argument for all p4 commands.
+    (optional): the :samp:`{host}:{port}` string describing how to get to the P4 Depot (repository), used as the `-p` argument for all p4 commands.
 
 ``p4user``
-    (optional): the Perforce user, used as the :option:`-u` argument to all p4 commands.
+    (optional): the Perforce user, used as the `-u` argument to all p4 commands.
 
 ``p4passwd``
-    (optional): the Perforce password, used as the :option:`-p` argument to all p4 commands.
+    (optional): the Perforce password, used as the `-p` argument to all p4 commands.
 
 ``p4client``
     (optional): The name of the client to use.
@@ -1124,7 +1128,7 @@ It takes the following arguments:
     The `cvsmodule` for the Buildbot source code is ``buildbot``.
 
 ``branch``
-    a string which will be used in a :option:`-r` argument.
+    a string which will be used in a `-r` argument.
     This is most useful for specifying a branch to work on.
     Defaults to ``HEAD``.
 
@@ -1142,7 +1146,7 @@ It takes the following arguments:
     ``extra_options`` is used for both.
 
 ``checkoutDelay``
-    if set, the number of seconds to put between the timestamp of the last known Change and the value used for the :option:`-D` option.
+    if set, the number of seconds to put between the timestamp of the last known Change and the value used for the `-D` option.
     Defaults to half of the parent :class:`Build`\'s ``treeStableTimer``.
 
 .. bb:step:: SVN (Slave-Side)
@@ -1178,10 +1182,10 @@ Alternatively, if you are building from multiple branches, then you should prefe
     It is possible to mix to have a mix of ``SVN`` steps that use either the ``svnurl`` or  ``baseURL`` arguments but not both at the same time.
 
 ``username``
-    (optional): if specified, this will be passed to the :command:`svn` binary with a :option:`--username` option.
+    (optional): if specified, this will be passed to the :command:`svn` binary with a `--username` option.
 
 ``password``
-    (optional): if specified, this will be passed to the ``svn`` binary with a :option:`--password` option.
+    (optional): if specified, this will be passed to the ``svn`` binary with a `--password` option.
     The password itself will be suitably obfuscated in the logs.
 
 ``extra_args``
@@ -1308,13 +1312,13 @@ The :bb:step:`P4 (Slave-Side)` build step creates a `Perforce <http://www.perfor
     Typically ``trunk``.
 
 ``p4port``
-    (optional): the :samp:`{host}:{port}` string describing how to get to the P4 Depot (repository), used as the :option:`-p` argument for all p4 commands.
+    (optional): the :samp:`{host}:{port}` string describing how to get to the P4 Depot (repository), used as the `-p` argument for all p4 commands.
 
 ``p4user``
-    (optional): the Perforce user, used as the :option:`-u` argument to all p4 commands.
+    (optional): the Perforce user, used as the `-u` argument to all p4 commands.
 
 ``p4passwd``
-    (optional): the Perforce password, used as the :option:`-p` argument to all p4 commands.
+    (optional): the Perforce password, used as the `-p` argument to all p4 commands.
 
 ``p4extra_views``
     (optional): a list of ``(depotpath, clientpath)`` tuples containing extra views to be mapped into the client specification.
@@ -1981,10 +1985,10 @@ The :bb:step:`MTR` step's arguments are:
     Defaults to 16.
 
 ``parallel``
-    Value of :option:`--parallel` option used for :file:`mysql-test-run.pl` (number of processes used to run the test suite in parallel).
+    Value of `--parallel` option used for :file:`mysql-test-run.pl` (number of processes used to run the test suite in parallel).
     Defaults to 4.
     This is used to determine the number of server error log files to download from the slave.
-    Specifying a too high value does not hurt (as nonexisting error logs will be ignored), however if using :option:`--parallel` value greater than the default it needs to be specified, or some server error logs will be missing.
+    Specifying a too high value does not hurt (as nonexisting error logs will be ignored), however if using `--parallel` value greater than the default it needs to be specified, or some server error logs will be missing.
 
 ``dbpool``
     An instance of :class:`twisted.enterprise.adbapi.ConnectionPool`, or ``None``.
@@ -2135,9 +2139,9 @@ The :bb:step:`BuildEPYDoc` step will run :command:`epydoc` to produce this API d
 You must supply the command line to be used.
 The default is ``make epydocs``, which assumes that your project has a :file:`Makefile` with an `epydocs` target.
 You might wish to use something like :samp:`epydoc -o apiref source/{PKGNAME}` instead.
-You might also want to add :option:`--pdf` to generate a PDF file instead of a large tree of HTML files.
+You might also want to add `--pdf` to generate a PDF file instead of a large tree of HTML files.
 
-The API docs are generated in-place in the build tree (under the workdir, in the subdirectory controlled by the :option:`-o` argument).
+The API docs are generated in-place in the build tree (under the workdir, in the subdirectory controlled by the `-o` argument).
 To make them useful, you will probably have to copy them to somewhere they can be read.
 A command like ``rsync -ad apiref/ dev.example.com:~public_html/current-apiref/`` might be useful.
 You might instead want to bundle them into a tarball and publish it in the same place where the generated install tarball is placed.
@@ -2255,7 +2259,7 @@ To run trial tests manually, you run the :command:`trial` executable and tell it
 The most common way of doing this is with a module name.
 For petmail, this might look like :command:`trial petmail.test`, which would locate all the :file:`test_*.py` files under :file:`petmail/test/`, running every test case it could find in them.
 Unlike the ``unittest.py`` that comes with Python, it is not necessary to run the :file:`test_foo.py` as a script; you always let trial do the importing and running.
-The step's ``tests``` parameter controls which tests trial will run: it can be a string or a list of strings.
+The step's ``tests`` parameter controls which tests trial will run: it can be a string or a list of strings.
 
 To find the test cases, the Python search path must allow something like ``import petmail.test`` to work.
 For packages that don't use a separate top-level :file:`lib` directory, ``PYTHONPATH=.`` will work, and will use the test cases (and the code they are testing) in-place.
@@ -2412,7 +2416,7 @@ The optional ``compress`` argument can be given as ``'gz'`` or ``'bz2'`` to comp
 
 .. note::
 
-   The permissions on the copied files will be the same on the master as originally on the slave, see :option:`buildslave create-slave --umask` to change the default one.
+   The permissions on the copied files will be the same on the master as originally on the slave, see `buildslave create-slave --umask` to change the default one.
 
 .. bb:step:: MultipleFileUpload
 
@@ -2569,6 +2573,163 @@ LogRenderable
 
 This build step takes content which can be renderable and logs it in a pretty-printed format.
 It can be useful for debugging properties during a build.
+
+.. _handle-related-builds:
+
+Handling Related Builds
+-----------------------
+
+There are situations when you want to cancel and/or stop related builds (for example, when the Buildbot is configured to build every new change, however build results for an older change might not be relevant any more).
+To handle these situations Buildbot offers two build steps (which are executed on master):
+
+* CancelRelatedBuilds
+* StopRelatedBuilds
+
+and specific implementation for Gerrit
+
+* CancelGerritRelatedBuilds
+* StopGerritRelatedBuilds
+
+These steps work in a pretty much same way: they look at possible candidates' source stamps and decide whether the step is relevant based on own source stamp.
+If the source stamps are somehow relevant (decided by a function provided as a parameter), then the corresponding build request will be cancelled, or the corresponding build will be stopped.
+
+.. bb:step:: CancelRelatedBuilds
+
+CancelRelatedBuilds
++++++++++++++++++++
+
+.. py:class:: buildbot.steps.master.CancelRelatedBuilds
+
+Beside `common parameters <Buildstep-Common-Parameters>`_ `CancelRelatedBuilds` accepts following parameters:
+
+``builderNames``
+    This is the set of builders which this step will check for possible candidates.
+    Possible values:
+
+    ``None``
+        check all builders known to the system
+
+    list of strings
+        check only these builders
+
+``preProcess``
+    This is an optional parameter to specify a function that would preprocess own build's source stamp.
+    This might be useful if the computations are extensive and there could be a lot of possible candidates to check.
+    Default: just use own build's source stamp.
+
+    .. code-block:: python
+
+        def preProcess(source_stamps):
+            """
+            :returns: what is passed as the first argument to `isRelevant`
+            """
+
+``isRelevant``
+    This is a mandatory parameter to specify a function that would take two parameters: own source stamps (possibly pre-processed) and the source stamps of the candidate build request.
+    If this function returns `True`, the candidate will be cancelled.
+
+    .. code-block:: python
+
+        def isRelevant(own_source_stamps, their_source_stamps):
+            """
+            :type own_source_stamps: either list(SourceStamp) or what is returned by `preProcess`
+            :type their_source_stamps: list(SourceStamp)
+            """
+
+    .. note::
+
+       It is possible that by the time the cancel request is sent, the corresponding build request is already started to build.
+
+.. bb:step:: StopRelatedBuilds
+
+StopRelatedBuilds
++++++++++++++++++
+
+.. py:class:: buildbot.steps.master.StopRelatedBuilds
+
+Beside `common parameters <Buildstep-Common-Parameters>`_ `StopRelatedBuilds` accepts following parameters:
+
+``builderNames``
+    This is the set of builders which this step will check for possible candidates.
+    Possible values:
+
+    ``None``
+        check all builders known to the system
+
+    list of strings
+        check only these builders
+
+``preProcess``
+    This is an optional parameter to specify a function that would preprocess own build's source stamp.
+    This might be useful if the computations are extensive and there could be a lot of possible candidates to check.
+    Default: just use own build's source stamp.
+
+    .. code-block:: python
+
+        def preProcess(source_stamps):
+            """
+            :returns: what is passed as the first argument to `isRelevant`
+            """
+
+``isRelevant``
+    This is a mandatory parameter to specify a function that would take two parameters: own source stamp (possibly pre-processed) and the source stamp of the candidate build.
+    If this function returns `True`, the candidate will be stopped.
+
+    .. code-block:: python
+
+        def isRelevant(own_source_stamps, their_source_stamps):
+            """
+            :type own_source_stamps: either list(SourceStamp) or what is returned by `preProcess`
+            :type their_source_stamps: list(SourceStamp)
+            """
+
+    .. note::
+
+       It is possible that by the time the stop request is sent, the corresponding build request is already finished.
+
+``reason`` (default: `Stopped by StopRelatedBuilds`)
+    This is an optional parameter to specify a string that will be used as a reason for stopping candidates.
+
+.. bb:step:: CancelGerritRelatedBuilds
+
+CancelGerritRelatedBuilds
++++++++++++++++++++++++++
+
+This is a convenience step that provides `preProcess` and `isRelevant` parameters to constructor of `CancelRelatedBuilds`.
+It's a rough equivalent of:
+
+.. code-block:: python
+
+    from buildbot.plugins import steps, util
+
+    class CancelGerritRelatedBuilds(CancelRelatedBuilds):
+        def __init__(self, **kwargs):
+            CancelRelatedBuilds.__init__(
+                self,
+                preProcess=util.gerrit.pre_process,
+                isRelevant=util.gerrit.is_relevant,
+                **kwargs)
+
+.. bb:step:: StopGerritRelatedBuilds
+
+StopGerritRelatedBuilds
++++++++++++++++++++++++
+
+This is a convenience step that provides `preProcess`, `isRelevant` and `reason` parameters to constructor of `StopRelatedBuilds`.
+It's a rough equivalent of:
+
+.. code-block:: python
+
+    from buildbot.plugins import steps, util
+
+    class StopGerritRelatedBuilds(StopRelatedBuilds):
+        def __init__(self, **kwargs):
+            StopRelatedBuilds.__init__(
+                self,
+                preProcess=util.gerrit.pre_process,
+                isRelevant=util.gerrit.is_relevant,
+                reason='A new patch set for the same change is submitted',
+                **kwargs)
 
 .. index:: Properties; from steps
 

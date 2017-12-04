@@ -179,7 +179,7 @@ No other sub-projects or branches will be tracked.
 If we want our ChangeSource to follow multiple branches, we have to do two things.
 First we have to change our ``svnurl=`` argument to watch more than just ``amanda/trunk``.
 We will set it to ``amanda`` so that we'll see both the trunk and all the branches.
-Second, we have to tell :bb:chsrc:`SVNPoller` how to split the ``({PROJECT-plus-BRANCH})({FILEPATH})`` strings it gets from the repository out into ``({BRANCH})`` and ``({FILEPATH})```.
+Second, we have to tell :bb:chsrc:`SVNPoller` how to split the ``({PROJECT-plus-BRANCH})({FILEPATH})`` strings it gets from the repository out into ``({BRANCH})`` and ``({FILEPATH})``.
 
 We do the latter by providing a ``split_file`` function.
 This function is responsible for splitting something like ``branches/3_3/common-src/amanda.h`` into ``branch='branches/3_3'`` and ``filepath='common-src/amanda.h'``.
@@ -664,7 +664,7 @@ For commands which only produce a small quantity of output, :class:`~buildbot.pr
 Adding LogObservers
 ~~~~~~~~~~~~~~~~~~~
 
-Most shell commands emit messages to stdout or stderr as they operate, especially if you ask them nicely with a :option:`--verbose` flag of some sort.
+Most shell commands emit messages to stdout or stderr as they operate, especially if you ask them nicely with a `--verbose` flag of some sort.
 They may also write text to a log file while they run.
 Your :class:`BuildStep` can watch this output as it arrives, to keep track of how much progress the command has made or to process log output for later summarization.
 

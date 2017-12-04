@@ -1,7 +1,7 @@
 Source: buildbot
 Section: devel
 Priority: optional
-Maintainer: Andriy Senkovych <jolly_roger@itblog.org.ua>
+Maintainer: Debian QA Group <packages@qa.debian.org>
 Uploaders: Matthias Klose <doko@debian.org>
 Build-Depends: debhelper (>= 7.0.50~),
  python-all-dev,

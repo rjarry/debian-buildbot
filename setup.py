@@ -240,11 +240,14 @@ setup_args = {
         ]),
         ('buildbot.steps', [
             ('buildbot.process.buildstep', ['BuildStep']),
+            ('buildbot.steps.gerrit', [
+                'CancelGerritRelatedBuilds', 'StopGerritRelatedBuilds']),
             ('buildbot.steps.http', [
                 'HTTPStep', 'POST', 'GET', 'PUT', 'DELETE', 'HEAD',
                 'OPTIONS']),
             ('buildbot.steps.master', [
-                'MasterShellCommand', 'SetProperty', 'LogRenderable']),
+                'MasterShellCommand', 'SetProperty', 'LogRenderable',
+                'CancelRelatedBuilds', 'StopRelatedBuilds']),
             ('buildbot.steps.maxq', ['MaxQ']),
             ('buildbot.steps.mswin', ['Robocopy']),
             ('buildbot.steps.mtrlogobserver', ['MTR']),
@@ -334,6 +337,9 @@ setup_args = {
             ('buildbot.status.web.auth', [
                 'BasicAuth', 'HTPasswdAprAuth', 'HTPasswdAuth', 'UsersAuth']),
             ('buildbot.status.web.authz', ['Authz']),
+            ('buildbot.steps.gerrit', [
+                ('gerrit.pre_process', 'pre_process'),
+                ('gerrit.is_relevant', 'is_relevant')]),
             ('buildbot.steps.mtrlogobserver', ['EqConnectionPool']),
             ('buildbot.steps.source.repo', [
                 ('repo.DownloadsFromChangeSource',
@@ -402,6 +408,12 @@ else:
     if os.getenv('NO_INSTALL_REQS'):
         setup_args['install_requires'] = None
         setup_args['tests_require'] = None
+
+    setup_args['extras_require'] = {
+        'docs': [
+            'sphinx >= 1.4.4'
+        ]
+    }
 
 setup(**setup_args)
 

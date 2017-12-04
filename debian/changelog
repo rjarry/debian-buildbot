@@ -1,3 +1,11 @@
+buildbot (0.8.14-1) unstable; urgency=medium
+
+  * QA upload.
+  * Orphan the package. See #883529.
+  * New upstream version (but not 0.9.x).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 04 Dec 2017 20:10:15 +0100
+
 buildbot (0.8.12-3.2) unstable; urgency=medium
 
   * Non-maintainer upload.
