@@ -62,7 +62,7 @@ class Git(Source):
 
     """ Class for Git with all the smarts """
     name = 'git'
-    renderables = ["repourl", "reference", "branch", "codebase"]
+    renderables = ["repourl", "reference", "branch", "codebase", "mode", "method"]
 
     def __init__(self, repourl=None, branch='HEAD', mode='incremental', method=None,
                  reference=None, submodules=False, shallow=False, progress=False, retryFetch=False,
@@ -127,15 +127,16 @@ class Git(Source):
         self.srcdir = 'source'
         Source.__init__(self, **kwargs)
 
-        if self.mode not in ['incremental', 'full']:
-            bbconfig.error("Git: mode must be 'incremental' or 'full'.")
         if not self.repourl:
             bbconfig.error("Git: must provide repourl.")
-        if (self.mode == 'full' and
-                self.method not in ['clean', 'fresh', 'clobber', 'copy', None]):
-            bbconfig.error("Git: invalid method for mode 'full'.")
-        if self.shallow and (self.mode != 'full' or self.method != 'clobber'):
-            bbconfig.error("Git: shallow only possible with mode 'full' and method 'clobber'.")
+        if isinstance(self.mode, basestring):
+            if self.mode not in ['incremental', 'full']:
+                bbconfig.error("Git: mode must be 'incremental' or 'full'.")
+            if isinstance(self.method, basestring):
+                if (self.mode == 'full' and self.method not in ['clean', 'fresh', 'clobber', 'copy', None]):
+                    bbconfig.error("Git: invalid method for mode 'full'.")
+                if self.shallow and (self.mode != 'full' or self.method != 'clobber'):
+                    bbconfig.error("Git: shallow only possible with mode 'full' and method 'clobber'.")
         if not isinstance(self.getDescription, (bool, dict)):
             bbconfig.error("Git: getDescription must be a boolean or a dict.")
 
@@ -227,12 +228,14 @@ class Git(Source):
         else:
             yield self._fetchOrFallback()
 
+        yield self._syncSubmodule(None)
         yield self._updateSubmodule(None)
 
     def clean(self):
         command = ['clean', '-f', '-f', '-d']
         d = self._dovccmd(command)
         d.addCallback(self._fetchOrFallback)
+        d.addCallback(self._syncSubmodule)
         d.addCallback(self._updateSubmodule)
         d.addCallback(self._cleanSubmodule)
         return d
@@ -253,15 +256,12 @@ class Git(Source):
         else:
             yield self._doClobber()
             yield self._fullCloneOrFallback()
+        yield self._syncSubmodule()
         yield self._updateSubmodule()
         yield self._cleanSubmodule()
 
     def copy(self):
-        cmd = buildstep.RemoteCommand('rmdir', {'dir': self.workdir,
-                                                'logEnviron': self.logEnviron,
-                                                'timeout': self.timeout, })
-        cmd.useLog(self.stdio_log, False)
-        d = self.runCommand(cmd)
+        d = self.runRmdir(self.workdir, abandonOnFailure=False)
 
         old_workdir = self.workdir
         self.workdir = self.srcdir
@@ -507,28 +507,23 @@ class Git(Source):
 
     def _doClobber(self):
         """Remove the work directory"""
-        cmd = buildstep.RemoteCommand('rmdir', {'dir': self.workdir,
-                                                'logEnviron': self.logEnviron,
-                                                'timeout': self.timeout, })
-        cmd.useLog(self.stdio_log, False)
-        d = self.runCommand(cmd)
-
-        def checkRemoval(res):
-            if res != 0:
-                raise RuntimeError("Failed to delete directory")
-            return res
-        d.addCallback(lambda _: checkRemoval(cmd.rc))
-        return d
+        return self.runRmdir(self.workdir)
 
     def computeSourceRevision(self, changes):
         if not changes:
             return None
         return changes[-1].revision
 
+    def _syncSubmodule(self, _=None):
+        if self.submodules:
+            return self._dovccmd(['submodule', 'sync'])
+        else:
+            return defer.succeed(0)
+
     def _updateSubmodule(self, _=None):
         if self.submodules:
             return self._dovccmd(['submodule', 'update',
-                                  '--init', '--recursive'])
+                                  '--init', '--recursive', '--force'])
         else:
             return defer.succeed(0)
 
@@ -572,7 +567,7 @@ class Git(Source):
         return d
 
     def _sourcedirIsUpdatable(self):
-        if self.slaveVersionIsOlderThan('listdir', '2.17'):
+        if self.slaveVersionIsOlderThan('listdir', '2.16'):
             d = self.pathExists(self.build.path_module.join(self.workdir, '.git'))
 
             def checkWithPathExists(exists):
@@ -591,6 +586,9 @@ class Git(Source):
             d = self.runCommand(cmd)
 
             def checkWithListdir(_):
+                if 'files' not in cmd.updates:
+                    # no files - directory doesn't exist
+                    return "clone"
                 files = cmd.updates['files'][0]
                 if '.git' in files:
                     return "update"

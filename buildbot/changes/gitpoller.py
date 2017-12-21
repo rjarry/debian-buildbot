@@ -120,7 +120,7 @@ class GitPoller(base.PollingChangeSource, StateMixin):
         def parseRemote(rows):
             branches = []
             for row in rows.splitlines():
-                if not '\t' in row:
+                if '\t' not in row:
                     # Not a useful line
                     continue
                 sha, ref = row.split("\t")
@@ -164,10 +164,11 @@ class GitPoller(base.PollingChangeSource, StateMixin):
         revs = {}
         for branch in branches:
             try:
-                revs[branch] = rev = yield self._dovccmd(
+                rev = yield self._dovccmd(
                     'rev-parse', [self._trackerBranch(branch)], path=self.workdir)
-                yield self._process_changes(rev, branch)
-            except:
+                revs[branch] = str(rev)
+                yield self._process_changes(revs[branch], branch)
+            except Exception:
                 log.err(_why="trying to poll branch %s of %s"
                         % (branch, self.repourl))
 
@@ -193,8 +194,8 @@ class GitPoller(base.PollingChangeSource, StateMixin):
                 try:
                     stamp = float(git_output)
                 except Exception, e:
-                        log.msg('gitpoller: caught exception converting output \'%s\' to timestamp' % git_output)
-                        raise e
+                    log.msg('gitpoller: caught exception converting output \'%s\' to timestamp' % git_output)
+                    raise e
                 return stamp
             else:
                 return None
@@ -240,13 +241,18 @@ class GitPoller(base.PollingChangeSource, StateMixin):
         - Add changes to database.
         """
 
-        lastRev = self.lastRev.get(branch)
-        self.lastRev[branch] = newRev
-        if not lastRev:
+        # initial run, don't parse all history
+        if not self.lastRev:
             return
+        if newRev in self.lastRev.values():
+            # TODO: no new changes on this branch
+            # should we just use the lastRev again, but with a different branch?
+            pass
 
         # get the change list
-        revListArgs = [r'--format=%H', '%s..%s' % (lastRev, newRev), '--']
+        revListArgs = ([r'--format=%H', r'%s' % newRev] +
+                       [r'^%s' % rev for rev in self.lastRev.values()] +
+                       [r'--'])
         self.changeCount = 0
         results = yield self._dovccmd('log', revListArgs, path=self.workdir)
 
@@ -254,6 +260,7 @@ class GitPoller(base.PollingChangeSource, StateMixin):
         revList = results.split()
         revList.reverse()
         self.changeCount = len(revList)
+        self.lastRev[branch] = newRev
 
         log.msg('gitpoller: processing %d changes: %s from "%s"'
                 % (self.changeCount, revList, self.repourl))
@@ -291,12 +298,18 @@ class GitPoller(base.PollingChangeSource, StateMixin):
         d = utils.getProcessOutputAndValue(self.gitbin,
                                            [command] + args, path=path, env=os.environ)
 
-        def _convert_nonzero_to_failure(res):
+        def _convert_nonzero_to_failure(res,
+                                        command,
+                                        args,
+                                        path):
             "utility to handle the result of getProcessOutputAndValue"
             (stdout, stderr, code) = res
             if code != 0:
-                raise EnvironmentError('command on repourl %s failed with exit code %d: %s'
-                                       % (self.repourl, code, stderr))
+                raise EnvironmentError('command %s %s in %s on repourl %s failed with exit code %d: %s'
+                                       % (command, args, path, self.repourl, code, stderr))
             return stdout.strip()
-        d.addCallback(_convert_nonzero_to_failure)
+        d.addCallback(_convert_nonzero_to_failure,
+                      command,
+                      args,
+                      path)
         return d
