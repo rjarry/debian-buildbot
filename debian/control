@@ -1,41 +1,73 @@
 Source: buildbot
 Section: devel
 Priority: optional
-Maintainer: Debian QA Group <packages@qa.debian.org>
+Maintainer: Robin Jarry <robin@jarry.cc>
 Uploaders: Matthias Klose <doko@debian.org>
-Build-Depends: debhelper (>= 7.0.50~),
- python-all-dev,
- python-jinja2 (>= 2.1),
- python-migrate (>= 0.8.0),
- python-mock,
- python-setuptools,
- python-sphinx (>= 1.0.7+dfsg),
- python-twisted (>= 11.0),
- python-dateutil (>= 1.5),
- libaprutil1,
- bash-completion
-Homepage: http://buildbot.net
-Standards-Version: 3.9.6
-X-Python-Version: >= 2.5
+Standards-Version: 4.1.3
+Build-Depends:
+ debhelper (>= 10.0),
+ dh-python (>= 3.20180313~),
+ bash-completion,
+ python3-all (>= 3.5),
+ python3-pkg-resources,
+ python3-setuptools,
+ python3-autobahn (>= 0.16.0),
+ python3-dateutil (>= 1.5),
+ python3-future,
+ python3-idna,
+ python3-jinja2 (>= 2.1),
+ python3-jwt,
+ python3-migrate (>= 0.9),
+ python3-openssl,
+ python3-pkg-resources (>= 8.0),
+ python3-service-identity,
+ python3-sqlalchemy (>= 0.8.0),
+ python3-twisted (>= 17.9.0),
+ python3-txaio (>= 2.2.2),
+ python3-zope.interface (>= 4.1.1),
+ python3-mock,
+ python3-treq,
+ python3-yaml,
+ python3-sphinx,
+ python3-docutils,
+ sphinx-doc,
+ python3-sphinxcontrib.blockdiag,
+Homepage: https://buildbot.net
+Vcs-Git: https://github.com/buildbot/debian-buildbot.git
 Vcs-Browser: https://github.com/buildbot/debian-buildbot
-Vcs-Git: git://github.com/buildbot/debian-buildbot.git
-Testsuite: autopkgtest
 
-Package: buildbot
-Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, ${sphinxdoc:Depends},
- ${shlibs:Depends},
- python-jinja2 (>=2.1),
- python-migrate (>= 0.6.1),
- python-twisted (>= 2.0),
- python-dateutil (>= 1.5),
- dpkg (>= 1.15.4),
- adduser
-Recommends: buildbot-slave,
- python-twisted-mail,
- libaprutil1
-Suggests: bzr | subversion | cvs | mercurial | darcs | git
-Description: system to automate the compile/test cycle
+Package: python3-buildbot
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-autobahn (>= 0.16.0),
+ python3-dateutil (>= 1.5),
+ python3-future,
+ python3-idna,
+ python3-jinja2 (>= 2.1),
+ python3-jwt,
+ python3-migrate (>= 0.9),
+ python3-openssl,
+ python3-pkg-resources (>= 8.0),
+ python3-service-identity,
+ python3-sqlalchemy (>= 0.8.0),
+ python3-twisted (>= 17.9.0),
+ python3-txaio (>= 2.2.2),
+ python3-zope.interface (>= 4.1.1),
+ passwd,
+ lsb-base,
+Breaks:
+ buildbot (<< 1.0),
+ buildbot-slave (<< 1.0),
+Recommends:
+ python3-buildbot-worker,
+ bash-completion,
+Suggests:
+ python3-buildbot-doc,
+ python3-lz4,
+ python3-psycopg2 | python3-mysqldb,
+Description: System to automate the compile/test cycle (server)
  The BuildBot is a system to automate the compile/test cycle required
  by most software projects to validate code changes. By automatically
  rebuilding and testing the tree each time something has changed,
@@ -49,3 +81,81 @@ Description: system to automate the compile/test cycle
  broken the build or not. Warning counts, lint checks, image size,
  compile time, and other build parameters can be tracked over time,
  are more visible, and are therefore easier to improve.
+ .
+ This package contains the master server.
+
+Package: python3-buildbot-doc
+Section: doc
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${sphinxdoc:Depends},
+Description: System to automate the compile/test cycle (documentation)
+ The BuildBot is a system to automate the compile/test cycle required
+ by most software projects to validate code changes. By automatically
+ rebuilding and testing the tree each time something has changed,
+ build problems are pinpointed quickly, before other developers are
+ inconvenienced by the failure. The guilty developer can be identified
+ and harassed without human intervention.
+ .
+ By running the builds on a variety of platforms, developers who do
+ not have the facilities to test their changes everywhere before
+ checkin will at least know shortly afterwards whether they have
+ broken the build or not. Warning counts, lint checks, image size,
+ compile time, and other build parameters can be tracked over time,
+ are more visible, and are therefore easier to improve.
+ .
+ This package contains the HTML documentation for both the master
+ and worker.
+
+Package: python3-buildbot-worker
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-future,
+ python3-twisted (>= 17.9.0),
+ passwd,
+ lsb-base,
+Breaks:
+ buildbot (<< 1.0),
+ buildbot-slave (<< 1.0),
+Recommends:
+ bzr | subversion | cvs | mercurial | darcs | git,
+Description: System to automate the compile/test cycle (worker agent)
+ The BuildBot is a system to automate the compile/test cycle required
+ by most software projects to validate code changes. By automatically
+ rebuilding and testing the tree each time something has changed,
+ build problems are pinpointed quickly, before other developers are
+ inconvenienced by the failure. The guilty developer can be identified
+ and harassed without human intervention.
+ .
+ By running the builds on a variety of platforms, developers who do
+ not have the facilities to test their changes everywhere before
+ checkin will at least know shortly afterwards whether they have
+ broken the build or not. Warning counts, lint checks, image size,
+ compile time, and other build parameters can be tracked over time,
+ are more visible, and are therefore easier to improve.
+ .
+ This package contains the worker, which performs the actual builds.
+ It is recommended to run the worker on behalf of a non-privileged user.
+
+Package: buildbot
+Depends:
+ ${misc:Depends},
+ python3-buildbot,
+Architecture: all
+Section: oldlibs
+Description: transitional package for python3-buildbot
+ This is a transitional package for python3-buildbot. It can safely be
+ removed.
+
+Package: buildbot-slave
+Depends:
+ ${misc:Depends},
+ python3-buildbot-worker,
+Architecture: all
+Section: oldlibs
+Description: transitional package for python3-buildbot-worker
+ This is a transitional package for python3-buildbot-worker. It can
+ safely be removed.

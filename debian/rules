@@ -1,41 +1,47 @@
 #!/usr/bin/make -f
 
-DESTDIR = debian/buildbot
+export DH_VERBOSE = 1
+
 export VERSION = $(shell head -n1 debian/changelog | cut -d' ' -f2 | tr -d '()')
+export BUILDBOT_VERSION = $(VERSION)
 
-clean:
-	dh $@
-%:
-	dh $@ --with python2,sphinxdoc,bash-completion --buildsystem python_distutils
+override_dh_auto_clean \
+override_dh_auto_configure \
+override_dh_auto_build:
+	$(@:override_%=%) --buildsystem=pybuild --sourcedirectory=master \
+		--package=python3-buildbot -- --name=buildbot
+	$(@:override_%=%) --buildsystem=pybuild --sourcedirectory=worker \
+		--package=python3-buildbot-worker -- --name=buildbot_worker
+	$(@:override_%=%) --sourcedirectory=master/docs \
+		--package=python3-buildbot-doc
 
-make_docs:
-	$(MAKE) -C docs SPHINXOPTS='-q'
+space :=
+space +=
+test_pythonpath = \
+	$(CURDIR)/pkg \
+	$(CURDIR)/debian/python3-buildbot/{install_dir} \
+	$(CURDIR)/debian/python3-buildbot-worker/{install_dir}
+test_command = PYTHONPATH=$(subst $(space),:,$(test_pythonpath)) LC_ALL=C.UTF-8 \
+	trial3 --reporter=text buildbot.test buildbot_worker.test
 
-override_dh_auto_build: make_docs
-	cd sqlalchemy && python ./setup.py --with-cextensions build
-	dh_auto_build
-
-override_dh_auto_clean:
-	rm -rf sqlalchemy/build
-	rm -fR buildbot.egg-info _trial_temp docs/docs.tgz
-	$(MAKE) -C docs clean
-	dh_auto_clean
+override_dh_auto_install:
+	dh_auto_install --buildsystem=pybuild --sourcedirectory=master \
+		--package=python3-buildbot -- --name=buildbot \
+		--after-install='rm {destdir}/usr/bin/buildbot_windows_service'
+	dh_auto_install --buildsystem=pybuild --sourcedirectory=worker \
+		--package=python3-buildbot-worker -- --name=buildbot_worker \
+		--after-install='rm {destdir}/usr/bin/buildbot_worker_windows_service'
+	dh_auto_install --sourcedirectory=master/docs \
+		--package=python3-buildbot-doc
+	dh_auto_test --buildsystem=pybuild -- --system=custom \
+		--test-args='$(test_env) $(test_command)'
 
 override_dh_auto_test:
-ifneq (,$(findstring nocheck, $(DEB_BUILD_OPTIONS)))
-	@echo "Skipping check (disabled in DEB_BUILD_OPTIONS)."
-else
-	-trial --reporter=bwverbose buildbot.test
-endif
-
-override_dh_python2:
-	dh_python2 $@ --skip-private
+	:
 
 override_dh_installinit:
-	mkdir -p ${DESTDIR}/etc/init.d ${DESTDIR}/etc/default
-	cp contrib/init-scripts/buildmaster.init.sh ${DESTDIR}/etc/init.d/buildmaster
-	cp contrib/init-scripts/buildmaster.default ${DESTDIR}/etc/default/buildmaster
-	dh_installinit --name=buildmaster --onlyscripts
+	dh_installinit --package=python3-buildbot --name=buildmaster
+	dh_installinit --package=python3-buildbot-worker --name=buildbot-worker
 
-override_dh_installchangelogs:
-	dh_installchangelogs --keep NEWS 
+%:
+	dh $@ --with python3,bash-completion,sphinxdoc

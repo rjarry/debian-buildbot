@@ -3,6 +3,8 @@
 set -e
 
 HOME_DIR=/var/lib/buildbot
+WORKERS_DIR=$HOME_DIR/workers
+
 USER_NAME=buildbot
 USER_DESCR="Buildbot system user"
 
@@ -11,19 +13,21 @@ case "$1" in
         # Create builbot user account if not exist
         if ! getent passwd buildbot>/dev/null; then
             echo "Creating $USER_DESCR ..."
-            adduser --quiet \
+            useradd \
                 --system \
-                --disabled-login \
-                --disabled-password \
+                --shell /bin/false \
                 --no-create-home \
-                --group \
-                --gecos "$USER_DESCR" \
-                --home "$HOME_DIR" \
+                --user-group \
+                --comment "$USER_DESCR" \
+                --home-dir "$HOME_DIR" \
                 "$USER_NAME"
         fi
 
-        # Fix permissions on $HOME_DIR recursively
-        chown -R $USER_NAME: $HOME_DIR
+        mkdir -p $HOME_DIR
+        mkdir -p $WORKERS_DIR
+
+        # Fix permissions
+        chown $USER_NAME: $HOME_DIR $WORKERS_DIR
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

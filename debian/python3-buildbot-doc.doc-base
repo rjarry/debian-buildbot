@@ -1,0 +1,17 @@
+Document: python3-buildbot-doc
+Title: Buildbot Documentation
+Author: The Buildbot Team Members
+Abstract:
+ Buildbot is a system to automate the compile/test cycle
+ required by most software projects to validate code changes.
+Section: Programming
+
+Format: HTML
+Index: /usr/share/doc/python3-buildbot-doc/html/index.html
+Files:
+ /usr/share/doc/python3-buildbot-doc/html/*.html
+ /usr/share/doc/python3-buildbot-doc/html/developer/*.html
+ /usr/share/doc/python3-buildbot-doc/html/manual/*.html
+ /usr/share/doc/python3-buildbot-doc/html/manual/installation/*.html
+ /usr/share/doc/python3-buildbot-doc/html/relnotes/*.html
+ /usr/share/doc/python3-buildbot-doc/html/tutorial/*.html
