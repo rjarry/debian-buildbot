@@ -1,0 +1,25 @@
+From: Robin Jarry <robin@jarry.cc>
+Date: Thu, 5 Apr 2018 11:24:59 +0200
+Subject: net_usage_data: fix missing version_id in os-release
+
+When running on sid, the VERSION_ID field is not present in
+/etc/os-release. Assume the default value is "unstable".
+
+Signed-off-by: Robin Jarry <robin@jarry.cc>
+---
+ master/buildbot/buildbot_net_usage_data.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/master/buildbot/buildbot_net_usage_data.py b/master/buildbot/buildbot_net_usage_data.py
+index 07e2a3a..f7cd8af 100644
+--- a/master/buildbot/buildbot_net_usage_data.py
++++ b/master/buildbot/buildbot_net_usage_data.py
+@@ -45,7 +45,7 @@ PHONE_HOME_URL = "https://events.buildbot.net/events/phone_home"
+ 
+ def linux_distribution():
+     os_release = "/etc/os-release"
+-    meta_data = {'ID': "unknown_linux", 'VERSION_ID': "unknown_version"}
++    meta_data = {'ID': "unknown_linux", 'VERSION_ID': "unstable"}
+     if os.path.exists(os_release):
+         with open("/etc/os-release") as f:
+             for line in f:
