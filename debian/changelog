@@ -1,4 +1,4 @@
-buildbot (1.1.0-1) UNRELEASED; urgency=medium
+buildbot (1.1.1-1) UNRELEASED; urgency=medium
 
   * New upstream version.
   * New maintainer (Closes: #883529).
@@ -6,7 +6,7 @@ buildbot (1.1.0-1) UNRELEASED; urgency=medium
   * The web-ui is no more included in the main package and not yet available
     in Debian. In the meantime, you may install buildbot-www from pypi.
 
- -- Robin Jarry <robin@jarry.cc>  Thu, 06 Apr 2018 10:51:02 +0200
+ -- Robin Jarry <robin@jarry.cc>  Fri, 06 Apr 2018 21:00:05 +0200
 
 buildbot (0.8.14-1) unstable; urgency=medium
 
