@@ -61,7 +61,7 @@ def mTimeVersion(init_file):
     return d.strftime("%Y.%m.%d")
 
 
-def getVersionFromArchiveId(git_archive_id='1520710268  (tag: v1.1.0)'):
+def getVersionFromArchiveId(git_archive_id='1523005014  (HEAD -> master, tag: v1.1.1)'):
     """ Extract the tag if a source is from git archive.
 
         When source is exported via `git archive`, the git_archive_id init value is modified
