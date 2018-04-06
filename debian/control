@@ -30,8 +30,9 @@ Build-Depends:
  python3-yaml,
  python3-sphinx,
  python3-docutils,
- sphinx-doc,
  python3-sphinxcontrib.blockdiag,
+ sphinx-doc,
+ sphinx-common,
 Homepage: https://buildbot.net
 Vcs-Git: https://github.com/buildbot/debian-buildbot.git
 Vcs-Browser: https://github.com/buildbot/debian-buildbot
