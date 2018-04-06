@@ -1,0 +1,24 @@
+From: Robin Jarry <robin@jarry.cc>
+Date: Fri, 6 Apr 2018 13:29:27 +0200
+Subject: docs: remove reference to external fonts
+
+This goes against the Debian Policy. Use the available fonts from the
+system.
+
+Signed-off-by: Robin Jarry <robin@jarry.cc>
+---
+ master/docs/_themes/qtile/static/qtile.css_t | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/master/docs/_themes/qtile/static/qtile.css_t b/master/docs/_themes/qtile/static/qtile.css_t
+index 9416bdd..f3707f8 100644
+--- a/master/docs/_themes/qtile/static/qtile.css_t
++++ b/master/docs/_themes/qtile/static/qtile.css_t
+@@ -1,7 +1,6 @@
+ {% set page_width = '960px' %}
+ {% set sidebar_width = '220px' %}
+ 
+-@import url("http://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:400italic,600italic,700italic,400,600,700");
+ @import url("basic.css");
+ 
+ /* Layout */
