@@ -1,0 +1,38 @@
+From: Robin Jarry <robin@jarry.cc>
+Date: Sat, 7 Apr 2018 21:07:13 +0200
+Subject: master: disable www ui in sample.cfg
+
+Signed-off-by: Robin Jarry <robin@jarry.cc>
+---
+ master/buildbot/scripts/sample.cfg | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/master/buildbot/scripts/sample.cfg b/master/buildbot/scripts/sample.cfg
+index 5a17c6a..ba827ee 100644
+--- a/master/buildbot/scripts/sample.cfg
++++ b/master/buildbot/scripts/sample.cfg
+@@ -82,19 +82,19 @@ c['services'] = []
+ # the 'title' string will appear at the top of this buildbot installation's
+ # home pages (linked to the 'titleURL').
+ 
+-c['title'] = "Hello World CI"
+-c['titleURL'] = "https://buildbot.github.io/hello-world/"
++#c['title'] = "Hello World CI"
++#c['titleURL'] = "https://buildbot.github.io/hello-world/"
+ 
+ # the 'buildbotURL' string should point to the location where the buildbot's
+ # internal web server is visible. This typically uses the port number set in
+ # the 'www' entry below, but with an externally-visible host name which the
+ # buildbot cannot figure out without some help.
+ 
+-c['buildbotURL'] = "http://localhost:8010/"
++#c['buildbotURL'] = "http://localhost:8010/"
+ 
+ # minimalistic config to activate new web UI
+-c['www'] = dict(port=8010,
+-                plugins=dict(waterfall_view={}, console_view={}, grid_view={}))
++#c['www'] = dict(port=8010,
++#                plugins=dict(waterfall_view={}, console_view={}, grid_view={}))
+ 
+ ####### DB URL
+ 

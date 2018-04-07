@@ -1,3 +1,4 @@
 0001-net_usage_data-fix-missing-version_id-in-os-release.patch
 0002-docs-bundle-sphinxcontrib.jinja-extension.patch
 0003-docs-remove-reference-to-external-fonts.patch
+0004-master-disable-www-ui-in-sample.cfg.patch
