@@ -18,21 +18,6 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 WORKER_RUNNER=/usr/bin/buildbot-worker
 
-# Get some LSB-like functions
-if [ -r /lib/lsb/init-functions ]; then
-	. /lib/lsb/init-functions
-else
-	function log_success_msg() {
-		echo "$@"
-	}
-	function log_failure_msg() {
-		echo "$@"
-	}
-	function log_warning_msg() {
-		echo "$@"
-	}
-fi
-
 # Source buildbot-worker configuration
 if [[ -r /etc/default/buildbot-worker ]]; then
 	. /etc/default/buildbot-worker
@@ -150,7 +135,7 @@ function do_op () {
 			continue
 		fi
 
-		log_daemon_msg "$3 #$1: '${WORKER_NAME[$i]}'"
+		log_daemon_msg "$3 #$i: ${WORKER_NAME[$i]}"
 		if eval $1 $2 $i; then
 			log_end_msg 0
 		else
@@ -174,9 +159,9 @@ function worker_status () {
 		fi
 
 		if kill -0 "$(cat ${WORKER_BASEDIR[$i]}/twistd.pid)" >/dev/null 2>&1; then
-			log_success_msg "buildbot-worker #$i: '$name' is running"
+			log_success_msg "buildbot-worker #$i: $name is running"
 		else
-			log_failure_msg "buildbot-worker #$i: '$name' is not running"
+			log_failure_msg "buildbot-worker #$i: $name is not running"
 			errors=$(($errors+1))
 		fi
 	done

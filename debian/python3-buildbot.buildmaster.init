@@ -127,7 +127,7 @@ function do_op () {
 			continue
 		fi
 
-		log_daemon_msg "$3 #$1: '${MASTER_NAME[$i]}'"
+		log_daemon_msg "$3 #$i: ${MASTER_NAME[$i]}"
 		if eval $1 $2 $i; then
 			log_end_msg 0
 		else
@@ -151,9 +151,9 @@ function master_status () {
 		fi
 
 		if kill -0 "$(cat ${MASTER_BASEDIR[$i]}/twistd.pid)" >/dev/null 2>&1; then
-			log_success_msg "buildmaster #$i: '$name' is running"
+			log_success_msg "buildmaster #$i: $name is running"
 		else
-			log_failure_msg "buildmaster #$i: '$name' is not running"
+			log_failure_msg "buildmaster #$i: $name is not running"
 			errors=$((errors + 1))
 		fi
 	done
