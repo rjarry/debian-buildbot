@@ -17,12 +17,12 @@ override_dh_auto_build:
 
 space :=
 space +=
-test_pythonpath = \
+test_pythonpaths = \
 	$(CURDIR)/pkg \
 	$(CURDIR)/debian/python3-buildbot/{install_dir} \
 	$(CURDIR)/debian/python3-buildbot-worker/{install_dir}
-test_command = PYTHONPATH=$(subst $(space),:,$(test_pythonpath)) LC_ALL=C.UTF-8 \
-	trial3 --reporter=text buildbot.test buildbot_worker.test
+test_env = PYTHONPATH=$(subst $(space),:,$(test_pythonpaths)) LC_ALL=C.UTF-8
+test_command = trial3 --reporter=text buildbot.test buildbot_worker.test
 
 override_dh_auto_install:
 	dh_auto_install --buildsystem=pybuild --sourcedirectory=master \
