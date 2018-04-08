@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+buildbot create-master /var/lib/buildbot/masters/default
+mv /var/lib/buildbot/masters/default/master.cfg.sample \
+	/var/lib/buildbot/masters/default/master.cfg
+chown buildbot: -R /var/lib/buildbot/masters/default
+sed -i 's/MASTER_ENABLED\[1\]=0/MASTER_ENABLED[1]=1/' /etc/default/buildmaster
+/etc/init.d/buildmaster start
+/etc/init.d/buildmaster status
+
+buildbot-worker create-worker \
+	/var/lib/buildbot/workers/default localhost example-worker pass
+chown buildbot: -R /var/lib/buildbot/workers/default
+sed -i 's/WORKER_ENABLED\[1\]=0/WORKER_ENABLED[1]=1/' /etc/default/buildbot-worker
+
+/etc/init.d/buildbot-worker restart
+/etc/init.d/buildbot-worker status
+/etc/init.d/buildmaster restart
+/etc/init.d/buildmaster status
+/etc/init.d/buildbot-worker stop
+/etc/init.d/buildmaster stop

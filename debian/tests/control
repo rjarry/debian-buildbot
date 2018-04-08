@@ -1,3 +1,2 @@
-Tests: python2
-Depends: @, @builddeps@
-Restrictions: allow-stderr
+Tests: smoke
+Restrictions: needs-root, isolation-container
