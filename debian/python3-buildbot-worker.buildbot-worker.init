@@ -18,6 +18,8 @@
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 WORKER_RUNNER=/usr/bin/buildbot-worker
 
+. /lib/lsb/init-functions
+
 # Source buildbot-worker configuration
 if [[ -r /etc/default/buildbot-worker ]]; then
 	. /etc/default/buildbot-worker
