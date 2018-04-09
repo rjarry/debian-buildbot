@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: Robin Jarry <robin@jarry.cc>
 Uploaders: Matthias Klose <doko@debian.org>
-Standards-Version: 4.1.3
+Standards-Version: 4.1.4
 Build-Depends:
  debhelper (>= 10.0),
  dh-python (>= 3.20180313~),
