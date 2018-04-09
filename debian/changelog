@@ -1,3 +1,11 @@
+buildbot (1.1.1-2) unstable; urgency=medium
+
+  * Fix worker init script.
+  * Fix empty doc package.
+  * Update Standards-Version to 4.1.4. No changes required.
+
+ -- Robin Jarry <robin@jarry.cc>  Mon, 09 Apr 2018 13:06:10 +0200
+
 buildbot (1.1.1-1) unstable; urgency=medium
 
   * New upstream version.
