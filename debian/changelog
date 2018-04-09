@@ -1,4 +1,4 @@
-buildbot (1.1.1-1) UNRELEASED; urgency=medium
+buildbot (1.1.1-1) unstable; urgency=medium
 
   * New upstream version.
   * New maintainer (Closes: #883529).
